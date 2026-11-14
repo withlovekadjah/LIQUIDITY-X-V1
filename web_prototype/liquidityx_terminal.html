@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0e14">
+<title>LiquidityX — Market Microstructure Terminal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap');
+:root{--bg:#090c12;--panel:#10151f;--panel2:#141b27;--line:#222b3a;--muted:#8290a5;--text:#e8edf5;--green:#21d6a1;--red:#ff5576;--amber:#f4b942;--blue:#77a8ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#172238 0,transparent 48%),var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:13px}button,input,select{font:inherit}button{cursor:pointer;transition:all .18s ease}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--amber);outline-offset:2px}.mono{font-family:"DM Mono",monospace;font-variant-numeric:tabular-nums}.panel{background:linear-gradient(145deg,rgba(19,26,38,.97),rgba(13,18,27,.98));border:1px solid var(--line);border-radius:13px;box-shadow:0 10px 28px #00000012}.panel-head{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.eyebrow{font-size:10px;letter-spacing:.12em;font-weight:700;color:var(--muted)}.muted{color:var(--muted)}.green{color:var(--green)}.red{color:var(--red)}.amber{color:var(--amber)}.pill{border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-size:10px;color:#a9b6c9;background:#0b1018}.btn{border:1px solid var(--line);background:#151d2a;color:#b9c5d7;border-radius:8px;padding:8px 11px;font-size:11px;font-weight:600}.btn:hover{border-color:#47556c;color:#fff}.btn.active{background:#f4b9421a;border-color:#f4b94266;color:var(--amber)}.metric{padding:14px 16px;min-width:0}.metric+.metric{border-left:1px solid var(--line)}.metric-label{color:var(--muted);font-size:10px;letter-spacing:.08em;margin-bottom:8px}.metric-value{font-size:clamp(15px,1.6vw,22px);font-weight:700;letter-spacing:-.04em;white-space:nowrap}.input{width:100%;background:#090e16;border:1px solid #2b3546;border-radius:7px;padding:9px 10px;color:#edf2f9;min-width:0}.input:focus{border-color:var(--amber)}.label{display:block;font-size:10px;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:.04em}.table-head,.book-row{display:grid;grid-template-columns:1.1fr .8fr .9fr;gap:8px;align-items:center}.table-head{font-size:10px;color:var(--muted);padding:0 9px 8px}.book-row{position:relative;padding:5px 9px;font-size:11px;overflow:hidden;border-radius:4px;cursor:pointer}.book-row span{position:relative;z-index:1}.book-row .size,.book-row .total{text-align:right}.book-row.ask{color:var(--red)}.book-row.bid{color:var(--green)}.book-row.ask:before,.book-row.bid:before{content:"";position:absolute;inset:0 0 0 auto;width:var(--depth,0%);opacity:.17}.book-row.ask:before{background:var(--red)}.book-row.bid:before{background:var(--green)}.book-row:hover{background:#ffffff09}.action{width:100%;border:0;border-radius:8px;padding:11px;font-weight:800;font-size:11px;letter-spacing:.03em;background:linear-gradient(135deg,#ffd36d,#e9a928);color:#17130a;box-shadow:0 5px 18px #f4b9421a}.action:hover{filter:brightness(1.08);transform:translateY(-1px)}.toggle{display:flex;align-items:center;gap:6px;color:#aab6c8;font-size:10px;cursor:pointer;white-space:nowrap}.toggle input{accent-color:var(--amber)}.chart-wrap{height:280px;position:relative}.depth-wrap{height:155px;position:relative}.stat-dot{width:7px;height:7px;border-radius:50%;display:inline-block}.glow{box-shadow:0 0 0 4px #21d6a112}.statusline{display:flex;align-items:center;gap:7px;color:#aab7c9;font-size:10px}.divider{height:1px;background:var(--line)}.concept{padding:13px;border-radius:10px;background:#0c111a;border:1px solid var(--line)}.concept h3{font-size:11px;font-weight:700;margin:0 0 7px}.concept p{font-size:10px;line-height:1.65;color:#94a1b4;margin:0}.tag{font-size:9px;border-radius:5px;padding:4px 6px;background:#1d2939;color:#aabbd3}.log{min-height:64px;padding:10px;border:1px solid var(--line);background:#080c12;border-radius:8px;font-size:10px;line-height:1.65;color:#9eacc0}.switch{display:flex;gap:5px;padding:4px;border-radius:9px;background:#090e16;border:1px solid var(--line)}.switch button{font-size:10px;padding:8px 10px;border-radius:6px;color:#8f9db1}.switch button.active{background:#202b3b;color:#f5c45b}.foot{border-top:1px solid var(--line);color:#68778d;font-size:10px;padding:13px 18px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.up{color:var(--green)}.down{color:var(--red)}@media(max-width:1000px){.metric{padding:12px}.metric-value{font-size:16px}.chart-wrap{height:250px}}@media(max-width:640px){.metric+.metric{border-left:0}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.metric:nth-child(even){border-left:1px solid var(--line)}.metric:nth-child(n+3){border-top:1px solid var(--line)}.chart-wrap{height:235px}.panel-head{padding:12px}.table-head,.book-row{grid-template-columns:1fr .8fr .8fr}.mobile-hide{display:none}}
+</style>
+</head>
+<body>
+<div class="min-h-screen flex flex-col">
+  <div class="px-4 md:px-6 py-2.5 border-b border-amber-400/20 bg-amber-400/[.055] flex flex-wrap items-center justify-between gap-2">
+    <div class="flex items-center gap-2"><span class="text-[9px] font-extrabold tracking-widest bg-amber-400 text-black rounded px-2 py-1">SIMULATION</span><span class="text-[11px] text-amber-100/90">Market microstructure lab</span></div>
+    <div class="flex items-center gap-4 text-[10px] muted"><span class="hidden md:inline">FIFO matching model</span><span class="hidden md:inline">Synthetic market data</span><span class="hidden sm:inline text-emerald-300">LOCAL SAVE ON</span><span class="flex items-center gap-1.5"><span class="stat-dot bg-amber-400 animate-pulse"></span> DEMO ENVIRONMENT</span></div>
+  </div>
+  <header class="px-4 md:px-6 py-4 border-b border-white/[.06] flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center border border-amber-400/30 bg-amber-400/10 text-amber-300"><i data-lucide="chart-no-axes-combined" class="w-5 h-5"></i></div>
+      <div><div class="font-extrabold tracking-[.14em] text-[15px]">LIQUIDITY<span class="text-amber-400">X</span></div><div class="text-[9px] muted tracking-[.15em] mt-1">MARKET MICROSTRUCTURE TERMINAL</div></div>
+    </div>
+    <div class="switch" role="group" aria-label="Select simulated market">
+      <button id="btn-liquid" class="active" onclick="switchAsset('liquid')">BTC / USD <span class="hidden sm:inline">· HIGH LIQUIDITY</span></button>
+      <button id="btn-illiquid" onclick="switchAsset('illiquid')">SNTS / XOF <span class="hidden sm:inline">· LOW LIQUIDITY</span></button>
+    </div>
+    <div class="statusline"><span class="stat-dot bg-emerald-400 glow"></span><span>ENGINE ONLINE</span><span class="muted">·</span><span id="clock" class="mono">--:--:--</span></div>
+  </header>
+
+  <main class="flex-1 p-3 md:p-5 max-w-[1800px] w-full mx-auto">
+    <section class="panel mb-3">
+      <div class="metrics grid grid-cols-4 divide-x divide-[#222b3a]">
+        <div class="metric"><div class="metric-label">SIMULATED MID PRICE</div><div id="metric-price" class="metric-value mono">$43,890.00</div><div id="metric-change" class="text-[10px] mt-2 green">+1.42% <span class="muted">· 24h model</span></div></div>
+        <div class="metric"><div class="metric-label">BID–ASK SPREAD</div><div id="metric-spread" class="metric-value mono">0.50</div><div id="spread-pct" class="text-[10px] mt-2 amber">0.0011% of mid</div></div>
+        <div class="metric"><div class="metric-label">VISIBLE BOOK DEPTH</div><div id="metric-depth" class="metric-value mono">—</div><div class="text-[10px] muted mt-2">Across 8 price levels / side</div></div>
+        <div class="metric"><div class="metric-label">MODEL ACTIVITY</div><div id="metric-activity" class="metric-value mono">HIGH</div><div id="activity-note" class="text-[10px] muted mt-2">Frequent synthetic ticks</div></div>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-3">
+      <section class="xl:col-span-7 flex flex-col gap-3 min-w-0">
+        <div class="panel p-3 md:p-4">
+          <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+            <div><div class="eyebrow mb-1">PRICE DISCOVERY</div><div id="chart-title" class="font-semibold text-[13px]">BTC/USD <span class="muted font-normal">· simulated tick series</span></div></div>
+            <div class="flex flex-wrap items-center gap-3 pt-1">
+              <label class="toggle"><input type="checkbox" id="toggle-bb" onchange="toggleOverlay('bb')"> Bollinger bands</label>
+              <label class="toggle"><input type="checkbox" id="toggle-sr" checked onchange="toggleOverlay('sr')"> Support / resistance</label>
+              <button class="btn" onclick="resetSimulation()"><i data-lucide="rotate-ccw" class="w-3 h-3 inline mr-1"></i>Reset</button>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-3 mb-2 text-[10px] muted"><span class="flex items-center gap-1.5"><span class="w-4 h-[2px] bg-emerald-400 inline-block"></span> Price</span><span id="bb-legend" class="hidden flex items-center gap-1.5"><span class="w-4 h-[2px] bg-blue-400 inline-block"></span> Bollinger bands</span><span id="sr-legend" class="flex items-center gap-1.5"><span class="w-4 h-[2px] bg-amber-400 inline-block"></span> Book levels</span><span class="ml-auto tag">1m · DEMO SERIES</span></div>
+          <div class="chart-wrap"><canvas id="priceChart" aria-label="Simulated price chart"></canvas></div>
+          <div id="chart-insight" class="mt-3 rounded-lg border border-[#283448] bg-[#0b111b] px-3 py-2.5 flex gap-2 items-start"><i data-lucide="info" class="w-4 h-4 text-amber-300 shrink-0 mt-0.5"></i><p id="insight-text" class="text-[10px] leading-relaxed text-slate-300">High-liquidity simulation: tighter spreads and more frequent price updates.</p></div>
+        </div>
+        <div class="panel p-3 md:p-4">
+          <div class="flex items-center justify-between gap-3 mb-2"><div><div class="eyebrow mb-1">LIQUIDITY PROFILE</div><div class="font-semibold text-[12px]">Cumulative order book depth</div></div><div class="flex gap-3 text-[10px]"><span class="green">● Bids</span><span class="red">● Asks</span></div></div>
+          <div class="depth-wrap"><canvas id="depthChart" aria-label="Cumulative order book depth chart"></canvas></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <article class="concept"><h3 class="text-amber-300"><i data-lucide="layers" class="w-3.5 h-3.5 inline mr-1"></i>Support & resistance</h3><p>Large resting buy orders may absorb selling pressure. Large resting sell orders may absorb buying pressure. These levels can change or disappear.</p></article>
+          <article class="concept"><h3 class="text-blue-300"><i data-lucide="activity" class="w-3.5 h-3.5 inline mr-1"></i>Liquidity & slippage</h3><p>A market order consumes available prices. Larger orders can execute across multiple levels, increasing the volume-weighted average execution cost.</p></article>
+          <article class="concept"><h3 class="text-emerald-300"><i data-lucide="shield-check" class="w-3.5 h-3.5 inline mr-1"></i>Market structure</h3><p>Trading venue rules matter. This teaching model does not reproduce a real exchange's matching, auction, queue priority, or market data feed.</p></article>
+        </div>
+      </section>
+
+      <section class="xl:col-span-5 flex flex-col gap-3 min-w-0">
+        <div class="panel p-3 md:p-4">
+          <div class="flex items-center justify-between gap-2 mb-4"><div><div class="eyebrow mb-1">LEVEL 2</div><div class="font-semibold text-[13px]">Order book ladder</div></div><span class="tag">SIMULATED DEPTH</span></div>
+          <div class="table-head mono"><span>PRICE (<span class="currency-label">USD</span>)</span><span class="text-right">SIZE</span><span class="text-right">CUM. SIZE</span></div>
+          <div id="asks-container" class="space-y-0.5 min-h-[120px] flex flex-col justify-end"></div>
+          <div class="my-2 px-3 py-3 rounded-lg bg-[#090e16] border border-[#263144] grid grid-cols-3 items-center gap-3"><div><div class="eyebrow mb-1">LAST TRADED PRICE</div><div id="last-traded-price" class="mono text-[14px] font-bold text-slate-100">—</div></div><div><div class="eyebrow mb-1">SIMULATED MID</div><div id="ladder-mid-price" class="mono text-[14px] font-bold green">43,890.00</div></div><div class="text-right"><div class="eyebrow mb-1">SPREAD</div><div id="ladder-spread-val" class="mono amber font-semibold">0.50</div></div></div>
+          <div id="bids-container" class="space-y-0.5 min-h-[120px]"></div>
+          <div class="divider my-3"></div>
+          <div class="flex justify-between text-[10px] muted"><span>Visible bid depth <strong id="bid-depth" class="green mono">—</strong></span><span>Visible ask depth <strong id="ask-depth" class="red mono">—</strong></span></div>
+        </div>
+
+        <div class="panel overflow-hidden">
+          <div class="panel-head"><div><div class="eyebrow mb-1">LEVEL 3</div><div class="font-semibold text-[13px]">Individual order queue</div></div><span class="tag">SIMULATED ORDER IDs</span></div>
+          <div class="p-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3"><div class="text-[10px] muted">Orders are listed by price-time priority. Select a side to inspect its queue.</div><div class="switch"><button id="l3-bids-btn" class="active" onclick="setL3Side('BUY')">BIDS</button><button id="l3-asks-btn" onclick="setL3Side('SELL')">ASKS</button></div></div>
+            <div class="grid grid-cols-5 gap-2 text-[9px] muted pb-2 border-b border-[#222b3a]"><span>ORDER ID</span><span>SIDE</span><span class="text-right">PRICE</span><span class="text-right">REMAIN</span><span class="text-right">STATUS</span></div>
+            <div id="order-ledger" class="space-y-1 py-2 max-h-[280px] overflow-auto"><div class="text-[10px] muted">Loading simulated order queue…</div></div>
+            <div class="mt-2 pt-2 border-t border-[#222b3a] flex flex-wrap justify-between gap-2 text-[10px] muted"><span>Visible orders: <strong id="l3-count" class="text-slate-200 mono">0</strong></span><span>Queue rule: <strong class="text-slate-200">price-time priority</strong></span></div>
+            <p class="text-[9px] muted leading-relaxed mt-2">Level 3 is simulated. Individual orders are reconstructed from the demo book’s displayed quantities; this is not an exchange-sourced order-by-order feed.</p>
+          </div>
+        </div>
+
+        <div class="panel overflow-hidden">
+          <div class="panel-head border-t-2 border-t-amber-400"><div><div class="eyebrow mb-1">TRADE LAB</div><div class="font-semibold text-[13px]">Order impact simulator</div></div><span class="tag">PAPER TRADING</span></div>
+          <div class="p-3 md:p-4">
+            <div class="grid grid-cols-2 gap-3 mb-3">
+              <div><label class="label" for="sim-order-type">ORDER TYPE</label><select id="sim-order-type" class="input" onchange="updateSimForm()"><option value="market">Market order</option><option value="limit">Limit order</option></select></div>
+              <div><label class="label">SIDE</label><div class="grid grid-cols-2 gap-1"><button id="btn-side-buy" onclick="setSimSide('buy')" class="btn active !text-emerald-300 !border-emerald-400/40">BUY</button><button id="btn-side-sell" onclick="setSimSide('sell')" class="btn">SELL</button></div></div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mb-3">
+              <div><label class="label" for="sim-volume">ORDER SIZE (UNITS)</label><input id="sim-volume" type="number" min="1" max="100000000" step="1" value="150" class="input mono"></div>
+              <div id="sim-price-container" class="opacity-50"><label class="label" for="sim-price">LIMIT PRICE (<span class="currency-label">USD</span>)</label><input id="sim-price" type="number" min="0.01" step="0.01" value="43890" class="input mono" disabled></div>
+            </div>
+            <button onclick="executeSimulatedOrder()" class="action"><i data-lucide="play" class="w-3.5 h-3.5 inline mr-1"></i> SUBMIT SIMULATED ORDER</button>
+            <div id="sim-output" class="log mt-3" role="status" aria-live="polite">Ready. Submit a paper order to inspect fills, unfilled quantity, and price impact.</div>
+            <div class="flex items-center justify-between gap-3 mt-3"><span class="text-[10px] muted">This simulator does not place real trades.</span><button class="text-[10px] amber hover:text-amber-200" onclick="clearLog()">Clear log</button></div>
+          </div>
+        </div>
+
+        <div class="panel p-3 md:p-4">
+          <div class="flex items-center justify-between gap-2 mb-3"><div><div class="eyebrow mb-1">LIVE TAPE</div><div class="font-semibold text-[12px]">Recent executions</div></div><span class="tag">SIMULATED FILLS</span></div>
+          <div class="grid grid-cols-4 gap-2 text-[9px] muted pb-2 border-b border-[#222b3a]"><span>TIME</span><span>SIDE</span><span class="text-right">PRICE</span><span class="text-right">SIZE</span></div>
+          <div id="trade-tape" class="space-y-1.5 py-2 min-h-[90px]"><div class="text-[10px] muted">Waiting for the first simulated execution…</div></div>
+        </div>
+        <div class="panel p-3 md:p-4">
+          <div class="flex items-center justify-between gap-2 mb-3"><div class="eyebrow">SESSION EVENT LOG</div><button class="text-[10px] amber hover:text-amber-200" onclick="clearEvents()">Clear events</button></div>
+          <div id="event-log" class="space-y-2"><div class="text-[10px] muted">System initialized · synthetic book loaded</div></div>
+        </div>
+      </section>
+    </div>
+    <section class="mt-4 panel p-4">
+      <div class="flex items-center justify-between flex-wrap gap-2 mb-3"><div><div class="eyebrow mb-1">MODEL NOTES</div><div class="font-semibold text-[12px]">How to interpret this terminal</div></div><span class="tag">EDUCATIONAL USE ONLY</span></div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-[10px] leading-relaxed muted">
+        <p><strong class="text-slate-200 block mb-1">Synthetic prices</strong>All prices, volumes, ticks and book levels are generated locally for demonstration. They are not exchange quotes, historical market observations, or investment recommendations.</p>
+        <p><strong class="text-slate-200 block mb-1">Matching assumptions</strong>Market orders sweep the displayed opposite-side levels in price order. Limit orders rest in the book unless they cross the opposite best quote, in which case the crossing portion executes first.</p>
+        <p><strong class="text-slate-200 block mb-1">Production boundary</strong>A live multi-user terminal needs a trusted server-side matching engine, persistent storage, authenticated sessions, validated market-data adapters, monitoring, and security controls.</p>
+      </div>
+    </section>
+  </main>
+  <footer class="foot"><span class="flex items-center gap-2"><span class="stat-dot bg-emerald-400"></span> LOCAL SIMULATION ACTIVE <span class="muted">· no exchange connection</span></span><span>LIQUIDITYX <span class="mono">v1.0.0</span> · MARKET MICROSTRUCTURE LAB</span></footer>
+</div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const STORAGE_KEY='liquidityx-terminal-v3';
+let currentAsset='liquid',simSide='buy',overlayBB=false,overlaySR=true,basePrice=43890,spread=.5;
+let asks=[],bids=[],priceHistory=[],priceChart=null,depthChart=null,tickTimer=null,events=[],trades=[];
+let l3Side='BUY',orderLedger=[],nextOrderId=1;
+const fmt=(n,d=2)=>Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const qty=n=>Math.round(n).toLocaleString('en-US');
+const nowLabel=()=>new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+function persistState(){
+ try{const all=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');all[currentAsset]={basePrice,spread,asks,bids,priceHistory:priceHistory.slice(-120),events:events.slice(0,12),trades:trades.slice(0,24),orderLedger:orderLedger.slice(0,500),nextOrderId,savedAt:Date.now()};localStorage.setItem(STORAGE_KEY,JSON.stringify(all));}
+ catch(e){console.warn('Local save unavailable:',e);}
+}
+function loadState(type){try{const all=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');const s=all[type];if(!s||!Array.isArray(s.asks)||!Array.isArray(s.bids)||!Array.isArray(s.priceHistory))return false;basePrice=Number(s.basePrice)|| (type==='liquid'?43890:14500);spread=type==='liquid'?.5:150;asks=s.asks;bids=s.bids;priceHistory=s.priceHistory;events=Array.isArray(s.events)?s.events:[];trades=Array.isArray(s.trades)?s.trades:[];orderLedger=Array.isArray(s.orderLedger)?s.orderLedger:[];nextOrderId=Number(s.nextOrderId)||1;sortBook();syncOrderLedger();return true;}catch(e){return false}}
+function logEvent(message,tone='muted'){events.unshift({time:nowLabel(),message,tone});events=events.slice(0,8);renderEvents()}
+function renderEvents(){$('event-log').innerHTML=events.map(e=>`<div class="flex gap-2 text-[10px] leading-relaxed"><span class="mono muted shrink-0">${e.time}</span><span class="${e.tone}">${e.message}</span></div>`).join('')||'<div class="text-[10px] muted">No events yet.</div>'}
+function recordTrade(side,price,size,source='FLOW'){
+ if(size<=0)return;trades.unshift({time:nowLabel(),side,price,size,source});trades=trades.slice(0,24);renderTrades();
+}
+function renderTrades(){$('trade-tape').innerHTML=trades.slice(0,12).map(t=>`<div class="grid grid-cols-4 gap-2 text-[10px] mono"><span class="muted">${t.time}</span><span class="${t.side==='BUY'?'green':'red'}">${t.side}</span><span class="text-right">${fmt(t.price)}</span><span class="text-right">${qty(t.size)}</span></div>`).join('')||'<div class="text-[10px] muted">Waiting for the first simulated execution…</div>'}
+function createOrder(side,price,size,status='RESTING'){
+ return {id:'LX-'+String(nextOrderId++).padStart(6,'0'),side,price,size,originalSize:size,status,createdAt:Date.now(),time:nowLabel()};
+}
+function syncOrderLedger(){
+ // Keep a visible order-by-order ledger aligned with the live simulated book totals.
+ // Existing order IDs persist while quantities remain; new displayed quantity becomes a new order.
+ const levels=[...bids.map(x=>({...x,side:'BUY'})),...asks.map(x=>({...x,side:'SELL'}))];
+ for(const level of levels){
+  let matching=orderLedger.filter(o=>o.side===level.side&&Math.abs(o.price-level.price)<1e-9&&o.status==='RESTING');
+  let total=matching.reduce((n,o)=>n+o.size,0);
+  if(total>level.size){let remove=total-level.size;for(const o of matching){const take=Math.min(remove,o.size);o.size-=take;remove-=take;if(o.size<=0)o.status='FILLED';if(remove<=0)break;}}
+  else if(total<level.size){let extra=level.size-total;if(matching.length===0){const count=Math.min(12,Math.max(1,Number(level.orders)||1));for(let i=0;i<count;i++){const remainingOrders=count-i;const part=Math.ceil(extra/remainingOrders);orderLedger.push(createOrder(level.side,level.price,part));extra-=part;}}else orderLedger.push(createOrder(level.side,level.price,extra));}
+ }
+ // Orders no longer present at a price are closed unless the price level still has remaining quantity.
+ for(const o of orderLedger){if(o.status==='RESTING'&&!levels.some(l=>l.side===o.side&&Math.abs(l.price-o.price)<1e-9)){o.status='FILLED';o.size=0;}}
+ orderLedger=orderLedger.filter(o=>o.status==='RESTING'||Date.now()-o.createdAt<120000).slice(-500);
+}
+function setL3Side(side){l3Side=side;$('l3-bids-btn').classList.toggle('active',side==='BUY');$('l3-asks-btn').classList.toggle('active',side==='SELL');renderOrderLedger();}
+function renderOrderLedger(){
+ const list=orderLedger.filter(o=>o.side===l3Side&&o.status==='RESTING').sort((a,b)=>l3Side==='BUY'?(b.price-a.price||a.createdAt-b.createdAt):(a.price-b.price||a.createdAt-b.createdAt));
+ $('order-ledger').innerHTML=list.slice(0,60).map(o=>`<div class="grid grid-cols-5 gap-2 text-[9px] mono py-1 border-b border-white/[.035]"><span class="text-slate-400">${o.id}</span><span class="${o.side==='BUY'?'green':'red'}">${o.side}</span><span class="text-right">${fmt(o.price)}</span><span class="text-right">${qty(o.size)}</span><span class="text-right amber">${o.status}</span></div>`).join('')||'<div class="text-[10px] muted py-3">No resting orders on this side.</div>';
+ $('l3-count').textContent=qty(list.length);
+}
+function initBook(){
+ asks=[];bids=[];
+ const illiquid=currentAsset==='illiquid';
+ const gap=illiquid?150:1, step=illiquid?100:.5;
+ for(let i=0;i<8;i++){
+  const askPrice=basePrice+gap/2+i*step,bidPrice=basePrice-gap/2-i*step;
+  // Initial displayed depth is intentionally thinner in the BRVM-like profile.
+  const as=illiquid?Math.floor(Math.random()*36)+5:Math.floor(Math.random()*180)+70;
+  const bs=illiquid?Math.floor(Math.random()*36)+5:Math.floor(Math.random()*180)+70;
+  asks.push({price:askPrice,size:as,orders:1+Math.floor(Math.random()*(illiquid?2:12))});
+  bids.push({price:bidPrice,size:bs,orders:1+Math.floor(Math.random()*(illiquid?2:12))});
+ }
+ // Occasional large resting orders demonstrate that an illiquid book can still contain a wall.
+ if(illiquid&&Math.random()<.65){asks[3].size+=Math.floor(Math.random()*180)+80;}
+ if(illiquid&&Math.random()<.65){bids[4].size+=Math.floor(Math.random()*180)+80;}
+ sortBook();
+}
+function sortBook(){asks=asks.filter(x=>x.size>0).sort((a,b)=>a.price-b.price);bids=bids.filter(x=>x.size>0).sort((a,b)=>b.price-a.price)}
+function seedHistory(){
+ priceHistory=[];let p=basePrice;const t=Date.now();
+ for(let i=40;i>=0;i--){
+  // Historical-looking seed is explicitly synthetic; illiquid prices repeat between trades.
+  if(currentAsset==='liquid')p=Math.max(1,p+(Math.random()-.5)*3);
+  else if(i%9===0)p=Math.max(100,p+(Math.random()>.5?100:-100));
+  priceHistory.push({time:new Date(t-i*60000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),price:p});
+ }
+ basePrice=p;
+ // Keep seeded quotes around the final synthetic reference price.
+ const gap=currentAsset==='liquid'?1:150,step=currentAsset==='liquid'?.5:100;
+ asks.forEach((o,i)=>o.price=basePrice+gap/2+i*step);bids.forEach((o,i)=>o.price=basePrice-gap/2-i*step);sortBook();
+}
+function reanchorBook(){
+ // Deliberately does not reprice existing orders. Resting limit orders keep their submitted prices.
+ sortBook();
+}
+function switchAsset(type){
+ currentAsset=type;spread=type==='liquid'?.5:150;
+ $('btn-liquid').classList.toggle('active',type==='liquid');$('btn-illiquid').classList.toggle('active',type==='illiquid');
+ $('chart-title').innerHTML=type==='liquid'?'BTC/USD <span class="muted font-normal">· simulated tick series</span>':'SNTS / XOF <span class="muted font-normal">· illiquid equity model</span>';
+ $('insight-text').textContent=type==='liquid'?'Liquid-market synthetic profile: frequent arrivals and deeper quotes. Not live exchange data.':'BRVM-like synthetic profile: fewer arrivals, thinner depth and occasional resting walls. Not live BRVM data.';
+ $('metric-activity').textContent=type==='liquid'?'HIGH':'LOW';$('activity-note').textContent=type==='liquid'?'Frequent synthetic trades':'Sparse synthetic trades';
+ document.querySelectorAll('.currency-label').forEach(e=>e.textContent=type==='liquid'?'USD':'XOF');
+ if(!loadState(type)){basePrice=type==='liquid'?43890:14500;initBook();seedHistory();events=[];trades=[];logEvent(type==='liquid'?'Created BTC/USD demo book':'Created SNTS/XOF demo book','amber');}
+ $('sim-price').value=fmt(basePrice,2);renderEvents();renderTrades();renderAll();persistState();
+}
+function initCharts(){
+ const common={responsive:true,maintainAspectRatio:false,animation:false,interaction:{intersect:false,mode:'index'},plugins:{legend:{display:false},tooltip:{backgroundColor:'#0a0e15',borderColor:'#2b3546',borderWidth:1,titleColor:'#dce5f2',bodyColor:'#c3cede',padding:10}},scales:{x:{grid:{color:'#202938'},ticks:{color:'#718097',maxTicksLimit:7,font:{size:9}}},y:{grid:{color:'#202938'},ticks:{color:'#718097',font:{size:9}}}}};
+ priceChart=new Chart($('priceChart'),{type:'line',data:{labels:[],datasets:[
+ {label:'Price',data:[],borderColor:'#21d6a1',borderWidth:2,pointRadius:0,tension:.18},
+ {label:'Upper band',data:[],borderColor:'#77a8ff',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
+ {label:'Lower band',data:[],borderColor:'#77a8ff',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:'-1'},
+ {label:'Support',data:[],borderColor:'#f4b942',borderWidth:1,borderDash:[5,4],pointRadius:0},
+ {label:'Resistance',data:[],borderColor:'#ff5576',borderWidth:1,borderDash:[5,4],pointRadius:0}
+ ],},options:{...common,scales:{...common.scales,y:{...common.scales.y,ticks:{...common.scales.y.ticks,callback:v=>fmt(v, currentAsset==='liquid'?0:0)}}}}});
+ depthChart=new Chart($('depthChart'),{type:'line',data:{labels:[],datasets:[
+ {label:'Bids',data:[],borderColor:'#21d6a1',backgroundColor:'rgba(33,214,161,.12)',fill:true,pointRadius:0,borderWidth:2,stepped:true},
+ {label:'Asks',data:[],borderColor:'#ff5576',backgroundColor:'rgba(255,85,118,.12)',fill:true,pointRadius:0,borderWidth:2,stepped:true}
+ ]},options:{...common,scales:{...common.scales,x:{...common.scales.x,ticks:{...common.scales.x.ticks,maxTicksLimit:8}}}}});
+}
+function renderBook(){
+ sortBook();syncOrderLedger();renderOrderLedger();const askC=$('asks-container'),bidC=$('bids-container');askC.innerHTML='';bidC.innerHTML='';
+ const totalA=asks.reduce((s,x)=>s+x.size,0)||1,totalB=bids.reduce((s,x)=>s+x.size,0)||1;
+ let cum=0;[...asks].slice(0,8).reverse().forEach(o=>{cum+=o.size;const el=document.createElement('div');el.className='book-row ask mono';el.style.setProperty('--depth',`${cum/totalA*100}%`);el.innerHTML=`<span>${fmt(o.price)}</span><span class="size">${qty(o.size)}</span><span class="total">${qty(cum)}</span>`;askC.appendChild(el)});
+ cum=0;bids.slice(0,8).forEach(o=>{cum+=o.size;const el=document.createElement('div');el.className='book-row bid mono';el.style.setProperty('--depth',`${cum/totalB*100}%`);el.innerHTML=`<span>${fmt(o.price)}</span><span class="size">${qty(o.size)}</span><span class="total">${qty(cum)}</span>`;bidC.appendChild(el)});
+ const bidD=bids.reduce((s,x)=>s+x.size,0),askD=asks.reduce((s,x)=>s+x.size,0);
+ $('bid-depth').textContent=qty(bidD);$('ask-depth').textContent=qty(askD);$('metric-depth').textContent=qty(bidD+askD);
+}
+function renderCharts(){
+ const labels=priceHistory.map(x=>x.time),prices=priceHistory.map(x=>x.price),mean=[],upper=[],lower=[];
+ for(let i=0;i<prices.length;i++){const arr=prices.slice(Math.max(0,i-19),i+1),m=arr.reduce((a,b)=>a+b,0)/arr.length,sd=Math.sqrt(arr.reduce((a,b)=>a+(b-m)**2,0)/arr.length);mean.push(m);upper.push(m+2*sd);lower.push(m-2*sd)}
+ const support=Math.min(...bids.map(x=>x.price)),resistance=Math.max(...asks.map(x=>x.price));
+ priceChart.data.labels=labels;priceChart.data.datasets[0].data=prices;priceChart.data.datasets[0].borderColor=currentAsset==='liquid'?'#21d6a1':'#f4b942';priceChart.data.datasets[0].stepped=currentAsset==='illiquid'?'before':false;
+ priceChart.data.datasets[1].data=overlayBB?upper:[];priceChart.data.datasets[2].data=overlayBB?lower:[];
+ priceChart.data.datasets[3].data=overlaySR?labels.map(()=>support):[];priceChart.data.datasets[4].data=overlaySR?labels.map(()=>resistance):[];
+ $('bb-legend').classList.toggle('hidden',!overlayBB);$('sr-legend').classList.toggle('hidden',!overlaySR);priceChart.update('none');
+ const b=bids.slice(0,8).reverse(),a=asks.slice(0,8);let cb=0,ca=0;
+ const bidData=b.map(x=>(cb+=x.size)),askData=a.map(x=>(ca+=x.size));
+ depthChart.data.labels=[...b.map(x=>fmt(x.price)),...a.map(x=>fmt(x.price))];
+ depthChart.data.datasets[0].data=[...bidData,...Array(a.length).fill(null)];depthChart.data.datasets[1].data=[...Array(b.length).fill(null),...askData];depthChart.update('none');
+}
+function renderAll(){
+ sortBook();const bestA=asks[0]?.price??basePrice+spread/2,bestB=bids[0]?.price??basePrice-spread/2,actualSpread=bestA-bestB;
+ $('metric-price').textContent=(currentAsset==='liquid'?'$':'₣')+fmt((bestA+bestB)/2);$('ladder-mid-price').textContent=fmt((bestA+bestB)/2);$('last-traded-price').textContent=trades.length?fmt(trades[0].price):'—';
+ $('metric-spread').textContent=fmt(actualSpread);$('ladder-spread-val').textContent=fmt(actualSpread);$('spread-pct').textContent=fmt(actualSpread/Math.max((bestA+bestB)/2,.01)*100,4)+'% of mid';
+ renderBook();if(priceChart)renderCharts();$('clock').textContent=nowLabel();
+}
+function marketTick(){
+ const illiquid=currentAsset==='illiquid';
+ const step=illiquid?100:.5, gap=illiquid?150:1;
+ // Arrival intensity differs by profile. Quiet ticks are real simulation states: no forced price move.
+ const arrivalChance=illiquid?.16:.92;
+ if(Math.random()<arrivalChance){
+  const side=Math.random()<.5?'BUY':'SELL';
+  const isMarket=Math.random()<(illiquid?.24:.58);
+  const size=illiquid?Math.floor(Math.random()*35)+5:Math.floor(Math.random()*140)+10;
+  const book=side==='BUY'?asks:bids;
+  if(isMarket){
+   let remaining=size,filled=0,notional=0,lastPrice=null;
+   while(remaining>0&&book.length){
+    const level=book[0],take=Math.min(remaining,level.size);
+    level.size-=take;remaining-=take;filled+=take;notional+=take*level.price;lastPrice=level.price;
+    recordTrade(side,level.price,take,'FLOW');if(level.size<=0)book.shift();
+   }
+   if(filled){basePrice=lastPrice;logEvent(`${side} flow executed ${qty(filled)} @ VWAP ${fmt(notional/filled)}`,side==='BUY'?'green':'red');}
+   if(remaining>0)logEvent(`${side} market flow: ${qty(remaining)} unfilled; opposite depth exhausted`,'amber');
+  }else{
+   // Add a resting limit order without crossing the spread.
+   const own=side==='BUY'?bids:asks;
+   const bestBid=bids[0]?.price??basePrice-gap/2,bestAsk=asks[0]?.price??basePrice+gap/2;
+   let price;
+   if(side==='BUY')price=bestBid-(Math.random()<.75?0:step*(1+Math.floor(Math.random()*(illiquid?4:2))));
+   else price=bestAsk+(Math.random()<.75?0:step*(1+Math.floor(Math.random()*(illiquid?4:2))));
+   const existing=own.find(o=>Math.abs(o.price-price)<1e-9);
+   if(existing){existing.size+=size;existing.orders=(existing.orders||1)+1;}
+   else own.push({price,size,orders:1});
+   logEvent(`${side} limit order added: ${qty(size)} @ ${fmt(price)}`,side==='BUY'?'green':'red');
+  }
+ }
+ // Cancel a small fraction of resting orders; remove quantities only through explicit cancellation.
+ const cancelChance=illiquid?.035:.075;
+ if(Math.random()<cancelChance){
+  const side=Math.random()<.5?'BUY':'SELL',own=side==='BUY'?bids:asks;
+  if(own.length){const idx=Math.floor(Math.random()*own.length),o=own[idx];
+   if(Math.random()<.35||o.size<=2){logEvent(`${side} resting order cancelled at ${fmt(o.price)}`,'amber');own.splice(idx,1);}
+   else{o.size=Math.max(1,Math.floor(o.size*.65));logEvent(`${side} resting quantity reduced at ${fmt(o.price)}`,'amber');}
+  }
+ }
+ // Maintain visible levels by adding small orders only at the far edge; never reprice existing orders.
+ sortBook();
+ while(asks.length<8){const p=asks.length?asks[asks.length-1].price+step:basePrice+gap/2;asks.push({price:p,size:illiquid?Math.floor(Math.random()*25)+5:Math.floor(Math.random()*150)+50,orders:1});}
+ while(bids.length<8){const p=bids.length?bids[bids.length-1].price-step:basePrice-gap/2;bids.push({price:p,size:illiquid?Math.floor(Math.random()*25)+5:Math.floor(Math.random()*150)+50,orders:1});}
+ // The last-traded price changes only when an execution happens. Quotes can change without a trade.
+ priceHistory.push({time:nowLabel(),price:basePrice});if(priceHistory.length>120)priceHistory.shift();
+ renderAll();persistState();
+}
+function setSimSide(side){simSide=side;const buy=$('btn-side-buy'),sell=$('btn-side-sell');buy.className='btn'+(side==='buy'?' active !text-emerald-300 !border-emerald-400/40':'');sell.className='btn'+(side==='sell'?' active !text-rose-300 !border-rose-400/40':'')}
+function updateSimForm(){const limit=$('sim-order-type').value==='limit';$('sim-price').disabled=!limit;$('sim-price-container').classList.toggle('opacity-50',!limit);if(limit)$('sim-price').value=fmt(basePrice,2)}
+function executeSimulatedOrder(){
+ const type=$('sim-order-type').value,raw=Number($('sim-volume').value),limitPrice=Number($('sim-price').value),out=$('sim-output');
+ if(!Number.isSafeInteger(raw)||raw<=0||raw>100000000){out.innerHTML='<span class="red">Invalid size. Enter a whole number between 1 and 100,000,000.</span>';return}
+ if(type==='limit'&&(!Number.isFinite(limitPrice)||limitPrice<=0)){out.innerHTML='<span class="red">Enter a valid positive limit price.</span>';return}
+ let remaining=raw,filled=0,notional=0,levels=0,firstPrice=null,lastPrice=null;
+ const sideBook=simSide==='buy'?asks:bids;
+ if(type==='market'){
+  while(remaining>0&&sideBook.length){
+   const level=sideBook[0];if(firstPrice===null)firstPrice=level.price;
+   const take=Math.min(remaining,level.size);level.size-=take;remaining-=take;filled+=take;notional+=take*level.price;lastPrice=level.price;recordTrade(simSide==='buy'?'BUY':'SELL',level.price,take,'USER');if(level.size===0){sideBook.shift();levels++}
+  }
+  sortBook();if(filled>0){basePrice=lastPrice;const avg=notional/filled,slip=simSide==='buy'?avg-firstPrice:firstPrice-avg;const color=simSide==='buy'?'green':'red';out.innerHTML=`<div class="${color} font-semibold mb-1">${simSide.toUpperCase()} MARKET ORDER PROCESSED</div><div>Filled <strong>${qty(filled)} / ${qty(raw)}</strong> units · VWAP <strong>${fmt(avg)}</strong></div><div>Unfilled ${qty(remaining)} · Slippage vs first fill ${fmt(Math.max(0,slip))} · Levels exhausted ${levels}</div>`;logEvent(`${simSide.toUpperCase()} market: ${qty(filled)} filled at VWAP ${fmt(avg)}`,color)}else{out.innerHTML='<span class="red">No available liquidity on the opposite side. Nothing filled.</span>'}
+  if(remaining>0)out.innerHTML+=`<div class="amber mt-1">Book liquidity exhausted. ${qty(remaining)} units remain unfilled.</div>`;
+ }else{
+  const own=simSide==='buy'?bids:asks,opposite=simSide==='buy'?asks:bids;
+  const crosses=()=>opposite.length&&(simSide==='buy'?limitPrice>=opposite[0].price:limitPrice<=opposite[0].price);
+  while(remaining>0&&crosses()){
+   const level=opposite[0],take=Math.min(remaining,level.size);if(firstPrice===null)firstPrice=level.price;
+   level.size-=take;remaining-=take;filled+=take;notional+=take*level.price;lastPrice=level.price;recordTrade(simSide==='buy'?'BUY':'SELL',level.price,take,'USER');if(level.size===0){opposite.shift();levels++}
+  }
+  if(filled>0)basePrice=lastPrice;
+  if(remaining>0){const existing=own.find(x=>Math.abs(x.price-limitPrice)<1e-9);if(existing)existing.size+=remaining;else own.push({price:limitPrice,size:remaining,orders:1});remaining=0}
+  sortBook();const avg=filled?notional/filled:null;
+  out.innerHTML=`<div class="${simSide==='buy'?'green':'red'} font-semibold mb-1">${simSide.toUpperCase()} LIMIT ORDER ACCEPTED</div><div>Immediate fill ${qty(filled)} units${avg!==null?' · VWAP '+fmt(avg):''}</div><div>Resting on book ${qty(raw-filled)} units at limit ${fmt(limitPrice)} · Levels exhausted ${levels}</div>`;
+  logEvent(`${simSide.toUpperCase()} limit: ${qty(filled)} filled, ${qty(raw-filled)} resting`,simSide==='buy'?'green':'red');
+ }
+ // Reference/last-traded price is not overwritten by the midpoint; no trade means no last-price change.
+ $('sim-price').value=fmt(basePrice,2);renderAll();persistState();
+}
+function toggleOverlay(type){if(type==='bb')overlayBB=$('toggle-bb').checked;else overlaySR=$('toggle-sr').checked;renderCharts()}
+function clearLog(){$('sim-output').textContent='Output cleared. Submit a new paper order to inspect its impact.'}
+function clearEvents(){events=[];renderEvents();persistState()}
+function resetSimulation(){if(tickTimer)clearInterval(tickTimer);try{const all=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');delete all[currentAsset];localStorage.setItem(STORAGE_KEY,JSON.stringify(all));}catch(e){}asks=[];bids=[];priceHistory=[];events=[];trades=[];orderLedger=[];nextOrderId=1;basePrice=currentAsset==='liquid'?43890:14500;initBook();seedHistory();logEvent('Market state reset by user','amber');renderTrades();renderAll();persistState();$('sim-output').textContent='Market reset. Synthetic order flow is running again.';tickTimer=setInterval(marketTick, 1000)}
+document.addEventListener('DOMContentLoaded',()=>{
+ if(window.lucide)lucide.createIcons();initCharts();switchAsset('liquid');tickTimer=setInterval(marketTick,1000);window.addEventListener('beforeunload',persistState);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')persistState()});
+});
+</script>
+</body>
+</html>
